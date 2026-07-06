@@ -1,0 +1,56 @@
+{
+  "india_35x45": {
+    "label": "India Passport 35×45mm",
+    "width_mm": 35,
+    "height_mm": 45,
+    "dpi": 600,
+    "output_px": [822, 1050],
+    "head_fraction": 0.57,
+    "top_margin": 0.07
+  },
+  "us_2x2": {
+    "label": "US Passport / Visa 2×2in",
+    "width_mm": 51,
+    "height_mm": 51,
+    "dpi": 600,
+    "output_px": [1200, 1200],
+    "head_fraction": 0.60,
+    "top_margin": 0.14
+  },
+  "uk_35x45": {
+    "label": "UK Passport 35×45mm",
+    "width_mm": 35,
+    "height_mm": 45,
+    "dpi": 600,
+    "output_px": [827, 1063],
+    "head_fraction": 0.70,
+    "top_margin": 0.06
+  },
+  "schengen_35x45": {
+    "label": "Schengen / EU Visa 35×45mm",
+    "width_mm": 35,
+    "height_mm": 45,
+    "dpi": 600,
+    "output_px": [827, 1063],
+    "head_fraction": 0.74,
+    "top_margin": 0.05
+  },
+  "canada_50x70": {
+    "label": "Canada Passport 50×70mm",
+    "width_mm": 50,
+    "height_mm": 70,
+    "dpi": 600,
+    "output_px": [1181, 1654],
+    "head_fraction": 0.48,
+    "top_margin": 0.08
+  },
+  "australia_35x45": {
+    "label": "Australia Passport 35×45mm",
+    "width_mm": 35,
+    "height_mm": 45,
+    "dpi": 600,
+    "output_px": [827, 1063],
+    "head_fraction": 0.75,
+    "top_margin": 0.05
+  }
+}
