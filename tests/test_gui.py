@@ -64,6 +64,28 @@ def test_start_does_not_autosave_but_save_all_writes(qapp, tmp_path):
     assert list(tmp_path.glob("*.jpg"))         # written only on Save all
 
 
+def test_save_mirrors_input_subfolders(qapp, tmp_path):
+    from pathlib import Path
+
+    import numpy as np
+
+    from passport_cropper.gui.app import MainWindow
+    from passport_cropper.pipeline import PhotoResult
+
+    win = MainWindow()
+    win.state.settings.output_dir = str(tmp_path)
+    crop = np.full((1050, 822, 3), 200, np.uint8)
+    top, sub = "/in/root/a.jpg", "/in/root/school1/b.jpg"
+    win.uploads.results = [
+        PhotoResult(src=top, status="ok", cropped=crop),
+        PhotoResult(src=sub, status="ok", cropped=crop),
+    ]
+    win.uploads.rel_by_src = {top: Path("."), sub: Path("school1")}
+    win.uploads._save_rows(range(2))
+    assert (tmp_path / "a.jpg").exists()               # top-level stays at root
+    assert (tmp_path / "school1" / "b.jpg").exists()   # subfolder is mirrored
+
+
 def test_editor_apply_matches_output_size(qapp):
     from passport_cropper.crop import CropRect
     from passport_cropper.gui.editor import ManualCropDialog

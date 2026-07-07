@@ -37,6 +37,7 @@ class UploadsPage(QWidget):
         self.files: list[Path] = []
         self.results: list = []           # aligned with table rows (None = pending)
         self.row_by_src: dict[str, int] = {}
+        self.rel_by_src: dict[str, Path] = {}  # src -> output subfolder (mirrors input)
         self._last_roots: list = []       # last picked files/folders (for re-scan)
         self._analyzer_cache: FaceAnalyzer | None = None
         self.worker: BatchWorker | None = None
@@ -195,16 +196,22 @@ class UploadsPage(QWidget):
     def _set_files_from_paths(self, paths):
         self._last_roots = list(paths)
         files: list[Path] = []
+        rel: dict[str, Path] = {}
         recurse = self.state.settings.recurse
         for p in paths:
             pp = Path(p)
             if pp.is_dir():
                 it = pp.rglob("*") if recurse else pp.glob("*")
-                files += [f for f in it if f.suffix.lower() in IMAGE_EXTS]
+                for f in it:
+                    if f.suffix.lower() in IMAGE_EXTS:
+                        files.append(f)
+                        rel[str(f)] = f.parent.relative_to(pp)  # subfolder under the picked folder
             elif pp.suffix.lower() in IMAGE_EXTS:
                 files.append(pp)
+                rel[str(pp)] = Path(".")
         if files:
             self.files = sorted(set(files))
+            self.rel_by_src = rel
             self._on_files_selected()
 
     # --- input selection --------------------------------------------------
@@ -366,15 +373,19 @@ class UploadsPage(QWidget):
             if res is None:
                 continue
             src = Path(res.src)
+            rel = self.rel_by_src.get(res.src, Path("."))   # mirror input subfolders
             if res.cropped is not None and res.status != "flagged":
-                out_path = out_dir / (src.stem + ext)
+                dest_dir = out_dir / rel
+                dest_dir.mkdir(parents=True, exist_ok=True)
+                out_path = dest_dir / (src.stem + ext)
                 save_output(res.cropped, out_path, preset, self.state.settings)
                 res.output_path = str(out_path)
                 saved += 1
             else:
-                flagged_dir.mkdir(parents=True, exist_ok=True)
+                fdir = flagged_dir / rel
+                fdir.mkdir(parents=True, exist_ok=True)
                 try:
-                    shutil.copy2(src, flagged_dir / src.name)
+                    shutil.copy2(src, fdir / src.name)
                 except OSError:
                     pass
                 flagged += 1
