@@ -19,3 +19,8 @@ output/
 
 # Personal sample photos — NOT for publishing (contains people's photos)
 sample/
+
+# Packaged installers (large; built locally or by CI)
+release/
+installer/Output/
+*.dmg

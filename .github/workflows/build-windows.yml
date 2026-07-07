@@ -21,12 +21,25 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt pyinstaller
 
-      - name: Build the app
+      - name: Build the app (PyInstaller)
         run: pyinstaller passport_cropper.spec
 
-      - name: Upload the Windows app
+      - name: Build the installer (Inno Setup)
+        run: |
+          $iscc = "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe"
+          if (-not (Test-Path $iscc)) { choco install innosetup --no-progress -y }
+          & $iscc "installer\GowriStudio.iss"
+
+      - name: Upload installer (.exe)
         uses: actions/upload-artifact@v4
         with:
-          name: Gowri-Studio-Windows
+          name: Gowri-Studio-Windows-Installer
+          path: installer/Output/GowriStudioSetup.exe
+          if-no-files-found: error
+
+      - name: Upload portable app (folder)
+        uses: actions/upload-artifact@v4
+        with:
+          name: Gowri-Studio-Windows-Portable
           path: 'dist/Gowri Studio/'
           if-no-files-found: error
